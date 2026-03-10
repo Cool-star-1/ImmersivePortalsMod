@@ -115,14 +115,14 @@ public abstract class MixinChunkMap_C implements IEThreadedAnvilChunkStorage {
     ) {
         CompletableFuture<Either<LevelChunk, ChunkHolder.ChunkLoadingFailure>> future = cir.getReturnValue();
         
-        future.thenAcceptAsync((either) -> {
-            either.mapLeft((worldChunk) -> {
-                IPGlobal.chunkDataSyncManager.onChunkProvidedDeferred(worldChunk);
-                
-                return Either.left(worldChunk);
-            });
-        }, (runnable) -> {
-            this.mainThreadMailbox.tell(ChunkTaskPriorityQueueSorter.message(chunkHolder, runnable));
-        });
-    }
+future.thenAcceptAsync((either) -> {
+    either.mapLeft((worldChunk) -> {
+        IPGlobal.chunkDataSyncManager.onChunkProvidedDeferred(worldChunk);
+
+        return Either.left(worldChunk);
+    });
+}, (runnable) -> {
+    this.mainThreadMailbox.tell(ChunkTaskPriorityQueueSorter.message(chunkHolder, runnable));
+});
+}
 }
