@@ -26,6 +26,7 @@ import qouteall.imm_ptl.core.ducks.IEThreadedAnvilChunkStorage;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
 
 @Mixin(value = ChunkMap.class, priority = 1100)
 public abstract class MixinChunkMap_C implements IEThreadedAnvilChunkStorage {
@@ -103,6 +104,15 @@ public abstract class MixinChunkMap_C implements IEThreadedAnvilChunkStorage {
         ci.cancel();
         // Note C2ME redirects getTickingChunk (1.18.2)
     }
+    @Inject(
+        method = "getPlayers",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    public void getPlayers(ChunkPos pos, boolean boundaryOnly, CallbackInfoReturnable<List<ServerPlayer>> cir) {
+        cir.setReturnValue(ImmPtlChunkTracking.getPlayersViewingChunk(this.level.dimension(), pos.x, pos.z, boundaryOnly));
+    }
+
     
     // do my packet sending
     @Inject(
